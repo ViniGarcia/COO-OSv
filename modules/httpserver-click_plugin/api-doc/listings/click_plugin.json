@@ -1,0 +1,28 @@
+{
+    "apiVersion": "0.0.1",
+    "swaggerVersion": "1.2",
+    "basePath": "{{Protocol}}://{{Host}}",
+    "resourcePath": "/click_plugin",
+    "produces": [
+        "application/json"
+    ],
+    "apis": [
+        {
+            "path": "/click_plugin/info",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Returns Click Info",
+                    "type": "string",
+                    "nickname": "click_info",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,2 @@
+/usr/mgmt/api/listings/click_plugin.json: ${MODULE_DIR}/api-doc/listings/click_plugin.json
+/usr/mgmt/plugins/click_plugin.so: ${MODULE_DIR}/click_plugin.so
