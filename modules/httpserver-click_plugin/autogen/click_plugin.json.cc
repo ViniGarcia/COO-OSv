@@ -20,9 +20,30 @@ void click_plugin_json_init_path(const std::string& description)
 {
 register_api("click_plugin", description);
     /**
-     * Returns Click Info
+     * Click Version
      */
-    path_description::add_path("/click_plugin/info",GET,"click_info")
+    path_description::add_path("/click_plugin/version",GET,"click_version")
+    ;
+    /**
+     * Running
+     */
+    path_description::add_path("/click_plugin/running",GET,"click_is_running")
+    ;
+    /**
+     * Start Click
+     */
+    path_description::add_path("/click_plugin/start",POST,"click_start")
+    ;
+    /**
+     * Stop Click
+     */
+    path_description::add_path("/click_plugin/stop",POST,"click_stop")
+    ;
+    /**
+     * Put new function
+     */
+    path_description::add_path("/click_plugin/edit_config",PUT,"click_edit_config")
+      ->pushmandatory_param("function")
     ;
 }
 }

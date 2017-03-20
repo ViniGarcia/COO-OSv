@@ -25,7 +25,11 @@ namespace json {
 void click_plugin_json_init_path(const std::string& description);
 namespace click_plugin_json {
 
-static const path_holder click_info("click_info");
+static const path_holder click_version("click_version");
+static const path_holder click_is_running("click_is_running");
+static const path_holder click_start("click_start");
+static const path_holder click_stop("click_stop");
+static const path_holder click_edit_config("click_edit_config");
 }
 }
 }

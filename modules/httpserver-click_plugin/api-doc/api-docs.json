@@ -4,7 +4,7 @@
     "apis": [
 	{
 	    "path": "/../listings/click_plugin.json",
-            "description": "Click API - Test"
+            "description": "Click Modular Router API"
         }
     ]
 }

@@ -8,17 +8,92 @@
     ],
     "apis": [
         {
-            "path": "/click_plugin/info",
+            "path": "/click_plugin/version",
             "operations": [
                 {
                     "method": "GET",
-                    "summary": "Returns Click Info",
+                    "summary": "Click Version",
                     "type": "string",
-                    "nickname": "click_info",
+                    "nickname": "click_version",
                     "produces": [
                         "application/json"
                     ],
                     "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+
+            ]
+        },
+        {
+            "path": "/click_plugin/running",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Running",
+                    "notes": "Return true if click is running",
+                    "type": "boolean",
+                    "nickname": "click_is_running",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        },
+        {
+            "path": "/click_plugin/start",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Start Click",
+                    "notes": "Return true if start is sucessful",
+                    "type": "boolean",
+                    "nickname": "click_start",
+                    "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        },
+        {
+            "path": "/click_plugin/stop",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Stop Click",
+                    "notes": "Return true if stop is sucessful",
+                    "type": "boolean",
+                    "nickname": "click_stop",
+                    "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        },
+        {
+            "path": "/click_plugin/edit_config",
+            "operations": [
+                {
+                    "method": "PUT",
+                    "summary": "Put new function",
+                    "notes": "Put the string as the new virtual function",
+                    "type": "boolean",
+                    "nickname": "click_edit_config",
+                    "produces": [
+                    "application/json"
+                    ],
+                    "parameters": [
+                    {
+                    "name": "function",
+                    "description": "New NF",
+                    "required": true,
+                    "allowMultiple":false,
+                    "type":"string",
+                    "paramType":"query"
+                    }
                     ],
                     "deprecated": "false"
                 }
