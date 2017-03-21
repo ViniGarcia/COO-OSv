@@ -11,13 +11,20 @@ using namespace std;
 using namespace json;
 using namespace click_plugin_json;
 
+static int i;
+
+void change_value(int j){
+    i = j;
+}
+
+int get_value(){
+    return i;
+}
 extern "C" void init(void* arg)
 {
 
     click_plugin_json_init_path("Click Modular Router API");
 
-    //Dummy Handlers (Tem que fazer a logica)
-    //Retorna Versao do Click
     click_version.set_handler([](const_req req){
         return "Version 0.0";
     });
@@ -26,19 +33,24 @@ extern "C" void init(void* arg)
 
     click_is_running.set_handler([](const_req req){
     	//Get info from handler?
-    	return false;
+    	int i;
+        i = get_value();
+        if(i == 1) return true;
+        return false;
     });
 
     //Inicia uma funcao
     //Retorna true se sucesso?
     click_start.set_handler([](const_req req){
     	//ver em httpserver/api/app.cc
-    	return true;
+    	change_value(1);
+        return true;
     });
 
     //Para a execução de uma funcao
     //Retorna true se sucesso?
     click_stop.set_handler([](const_req req){
+        change_value(0);
     	return true;
     });
 
