@@ -1,5 +1,13 @@
 #include "click_plugin.hh"
 #include "autogen/click_plugin.json.hh"
+#include <boost/algorithm/string.hpp>
+#include <boost/format.hpp>
+#include <osv/commands.hh>
+#include <osv/app.hh>
+#include <osv/sched.hh>
+#include <signal.h>
+#include <sys/types.h>
+#include <errno.h>
 
 namespace httpserver {
 
@@ -13,13 +21,32 @@ using namespace click_plugin_json;
 
 static int i;
 
-void change_value(int j){
-    i = j;
-}
-
 int get_value(){
     return i;
 }
+
+static std::string exec_click() {
+    const std::string& cmnd_line = "/click --dpdk --no-shconf -c 0x01 -n 1 --log-level 8 -m 64 -- --allow-reconfigure -p 8001 func.click";
+    bool ok;
+    bool new_program = true;
+    auto new_commands = osv::parse_command_line(cmnd_line, ok);
+    if (!ok) {
+        throw bad_param_exception("Bad formatted command");
+    }
+    std::string app_ids;
+    for (auto cmnd: new_commands) {
+        std::vector<std::string> c(cmnd.begin(), std::prev(cmnd.end()));
+        auto click_main = osv::application::run(c[0], c, new_program);
+        pid_t pid = click_main->get_main_thread_id();
+        assert(pid != 0);
+        app_ids += std::to_string(pid) + " ";
+    }
+    if (app_ids.size()) {
+        app_ids.pop_back(); // remove trailing space
+    }
+    return app_ids;
+}
+
 extern "C" void init(void* arg)
 {
 
@@ -42,15 +69,14 @@ extern "C" void init(void* arg)
     //Inicia uma funcao
     //Retorna true se sucesso?
     click_start.set_handler([](const_req req){
-    	//ver em httpserver/api/app.cc
-    	change_value(1);
-        return true;
+    	//change_value(1);
+        return exec_click();
     });
 
     //Para a execução de uma funcao
     //Retorna true se sucesso?
     click_stop.set_handler([](const_req req){
-        change_value(0);
+        //change_value(0);
     	return true;
     });
 
