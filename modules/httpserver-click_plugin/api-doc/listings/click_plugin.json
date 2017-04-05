@@ -74,26 +74,52 @@
             ]
         },
         {
-            "path": "/click_plugin/edit_config",
+            "path": "/click_plugin/read_file",
             "operations": [
                 {
-                    "method": "PUT",
-                    "summary": "Put new function",
-                    "notes": "Put the string as the new virtual function",
-                    "type": "boolean",
-                    "nickname": "click_edit_config",
+                    "method": "GET",
+                    "summary": "Returns File Content",
+                    "type": "string",
+                    "nickname": "click_read_file",
                     "produces": [
-                    "application/json"
+                        "application/json"
                     ],
                     "parameters": [
-                    {
-                    "name": "function",
-                    "description": "New NF",
-                    "required": true,
-                    "allowMultiple":false,
-                    "type":"string",
-                    "paramType":"query"
-                    }
+                        {"name": "path",
+                        "description": "File path string",
+                        "required": true,
+                        "allowMultiple": false,
+                        "type": "string",
+                        "paramType": "query"}
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        },
+        {
+            "path": "/click_plugin/write_file",
+            "operations": [
+                {
+                    "method": "POST",
+                    "summary": "Replace File Content or Create File",
+                    "type": "string",
+                    "nickname": "click_write_file",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "parameters": [
+                        {"name": "path",
+                        "description": "File path string",
+                        "required": true,
+                        "allowMultiple": false,
+                        "type": "string",
+                        "paramType": "query"},
+                        {"name": "content",
+                        "description": "File content",
+                        "required": true,
+                        "allowMultiple": false,
+                        "type": "string",
+                        "paramType": "query"}
                     ],
                     "deprecated": "false"
                 }

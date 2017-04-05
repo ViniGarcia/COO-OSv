@@ -29,7 +29,8 @@ static const path_holder click_version("click_version");
 static const path_holder click_is_running("click_is_running");
 static const path_holder click_start("click_start");
 static const path_holder click_stop("click_stop");
-static const path_holder click_edit_config("click_edit_config");
+static const path_holder click_read_file("click_read_file");
+static const path_holder click_write_file("click_write_file");
 }
 }
 }

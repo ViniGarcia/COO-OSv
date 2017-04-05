@@ -40,10 +40,17 @@ register_api("click_plugin", description);
     path_description::add_path("/click_plugin/stop",POST,"click_stop")
     ;
     /**
-     * Put new function
+     * Returns File Content
      */
-    path_description::add_path("/click_plugin/edit_config",PUT,"click_edit_config")
-      ->pushmandatory_param("function")
+    path_description::add_path("/click_plugin/read_file",GET,"click_read_file")
+      ->pushmandatory_param("path")
+    ;
+    /**
+     * Replace File Content or Create File
+     */
+    path_description::add_path("/click_plugin/write_file",POST,"click_write_file")
+      ->pushmandatory_param("path")
+      ->pushmandatory_param("content")
     ;
 }
 }
