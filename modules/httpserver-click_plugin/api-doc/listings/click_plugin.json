@@ -84,14 +84,6 @@
                     "produces": [
                         "application/json"
                     ],
-                    "parameters": [
-                        {"name": "path",
-                        "description": "File path string",
-                        "required": true,
-                        "allowMultiple": false,
-                        "type": "string",
-                        "paramType": "query"}
-                    ],
                     "deprecated": "false"
                 }
             ]
@@ -124,6 +116,117 @@
                     "deprecated": "false"
                 }
             ]
+        },
+        {
+            "path": "/click_plugin/vnf_identification",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Return VNF IDs",
+                    "notes": "Return current VNF identification, if there is any, else return nothing",
+                    "type": "VNF_id",
+                    "nickname": "click_vnf_id",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        },
+        {
+            "path": "/click_plugin/metrics",
+            "operations": [
+                {   "method": "GET",
+                    "summary": "Usage metrics from Click",
+                    "notes": "Return an array of metrics from the Click thread",
+                    "type": "Metrics",
+                    "nickname": "click_metrics",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "parameters": [
+                    ],
+                    "deprecated": "false"
+                }
+            ]
+        },
+        {
+            "path": "/click_plugin/log",
+            "operations": [
+                {
+                    "method": "GET",
+                    "summary": "Returns Click Execution Log",
+                    "type": "string",
+                    "nickname": "click_log",
+                    "produces": [
+                        "application/json"
+                    ],
+                    "deprecated": "false"
+                }
+            ]
         }
-    ]
+    ],
+    "models" : {
+        "Metric": {
+           "id": "Metric",
+           "description": "Single Metric",
+               "properties": {
+                "id":{
+                    "type": "int",
+                    "description": "Unique identifier for each metric"
+                },
+                "value": {
+                    "type": "long",
+                    "description": "Value of current metric"
+                },
+                "name" : {
+                     "type": "string",
+                    "description": "Metric name"
+                }
+            }
+        },
+        "Metrics": {
+               "id":"Metrics",
+               "description": "List of all metrics",
+               "properties": {
+                "list": {
+                    "type": "array",
+                    "items": {"type": "Metric"},
+                    "description": "List of metric objects"
+                },
+                "time_ms": {
+                    "type": "long",
+                    "description": "Time when metrics were taken (milliseconds since epoch)"
+                }
+            }
+        },
+        "VNF_id": {
+           "id": "VNF_id",
+           "description": "Single VNF identification value",
+               "properties": {
+                "id": {
+                    "type": "string",
+                    "description": "VNF Unique Identifier"
+                },
+                "version":{
+                    "type": "string",
+                    "description": "Version of VNF"
+                },
+                "name" : {
+                     "type": "string",
+                    "description": "VNF Name"
+                },
+                "description": {
+                    "type": "string",
+                    "description": "VNF description"
+                },
+                "provider": {
+                    "type" : "string",
+                    "description": "VNF Provider"
+                }
+            }
+        }        
+    }
 }

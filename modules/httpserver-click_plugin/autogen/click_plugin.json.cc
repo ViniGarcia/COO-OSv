@@ -43,7 +43,6 @@ register_api("click_plugin", description);
      * Returns File Content
      */
     path_description::add_path("/click_plugin/read_file",GET,"click_read_file")
-      ->pushmandatory_param("path")
     ;
     /**
      * Replace File Content or Create File
@@ -51,6 +50,21 @@ register_api("click_plugin", description);
     path_description::add_path("/click_plugin/write_file",POST,"click_write_file")
       ->pushmandatory_param("path")
       ->pushmandatory_param("content")
+    ;
+    /**
+     * Return VNF IDs
+     */
+    path_description::add_path("/click_plugin/vnf_identification",GET,"click_vnf_id")
+    ;
+    /**
+     * Usage metrics from Click
+     */
+    path_description::add_path("/click_plugin/metrics",GET,"click_metrics")
+    ;
+    /**
+     * Returns Click Execution Log
+     */
+    path_description::add_path("/click_plugin/log",GET,"click_log")
     ;
 }
 }

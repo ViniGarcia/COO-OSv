@@ -7,8 +7,8 @@ obj/click_plugin.o: click_plugin.cc click_plugin.hh \
  ../../modules/httpserver/json/json_elements.hh \
  ../../modules/httpserver/json/formatter.hh \
  ../../modules/httpserver/json/json_elements.hh \
- ../../modules/httpserver/matcher.hh autogen/click_plugin.json.hh \
- ../../modules/httpserver/path_holder.hh \
+ ../../modules/httpserver/matcher.hh ControlSocket.hh VNFHeader.hh \
+ autogen/click_plugin.json.hh ../../modules/httpserver/path_holder.hh \
  ../../modules/httpserver/routes.hh ../../include/osv/commands.hh \
  ../../include/osv/app.hh ../../include/osv/sched.hh \
  ../../arch/x64/arch.hh ../../arch/x64/processor.hh \
@@ -55,6 +55,10 @@ click_plugin.hh:
 ../../modules/httpserver/json/json_elements.hh:
 
 ../../modules/httpserver/matcher.hh:
+
+ControlSocket.hh:
+
+VNFHeader.hh:
 
 autogen/click_plugin.json.hh:
 
