@@ -8,11 +8,9 @@ obj/click_plugin.o: click_plugin.cc click_plugin.hh \
  ../../modules/httpserver/json/formatter.hh \
  ../../modules/httpserver/json/json_elements.hh \
  ../../modules/httpserver/matcher.hh ControlSocket.hh VNFHeader.hh \
- autogen/click_plugin.json.hh ../../modules/httpserver/path_holder.hh \
- ../../modules/httpserver/routes.hh ../../include/osv/commands.hh \
- ../../include/osv/app.hh ../../include/osv/sched.hh \
- ../../arch/x64/arch.hh ../../arch/x64/processor.hh \
- ../../include/osv/types.h ../../arch/x64/cpuid.hh ../../arch/x64/msr.hh \
+ ClickMetrics.hh ../../include/osv/sched.hh ../../arch/x64/arch.hh \
+ ../../arch/x64/processor.hh ../../include/osv/types.h \
+ ../../arch/x64/cpuid.hh ../../arch/x64/msr.hh \
  ../../arch/x64/arch-thread-state.hh ../../arch/x64/arch-cpu.hh \
  ../../arch/x64/exceptions.hh ../../include/osv/rcu.hh \
  ../../include/osv/barrier.hh ../../include/osv/mutex.h \
@@ -23,8 +21,13 @@ obj/click_plugin.o: click_plugin.cc click_plugin.hh \
  ../../drivers/clock.hh ../../include/osv/timer-set.hh \
  ../../include/osv/bitset-iter.hh ../../include/osv/debug.hh \
  ../../include/osv/debug.h ../../include/osv/printf.hh \
- ../../include/osv/elf.hh ../../fs/fs.hh ../../include/osv/file.h \
- ../../include/osv/uio.h ../../bsd/sys/sys/queue.h \
+ ../../include/osv/mount.h ../../include/osv/vnode.h \
+ ../../bsd/sys/sys/queue.h ../../include/osv/power.hh \
+ ../../include/api/unistd.h autogen/click_plugin.json.hh \
+ ../../modules/httpserver/path_holder.hh \
+ ../../modules/httpserver/routes.hh ../../include/osv/commands.hh \
+ ../../include/osv/app.hh ../../include/osv/elf.hh ../../fs/fs.hh \
+ ../../include/osv/file.h ../../include/osv/uio.h \
  ../../include/osv/dentry.h ../../include/osv/addr_range.hh \
  ../../include/osv/error.h ../../include/osv/mmu-defs.hh \
  ../../include/osv/virt_to_phys.hh ../../arch/x64/arch-mmu.hh \
@@ -60,15 +63,7 @@ ControlSocket.hh:
 
 VNFHeader.hh:
 
-autogen/click_plugin.json.hh:
-
-../../modules/httpserver/path_holder.hh:
-
-../../modules/httpserver/routes.hh:
-
-../../include/osv/commands.hh:
-
-../../include/osv/app.hh:
+ClickMetrics.hh:
 
 ../../include/osv/sched.hh:
 
@@ -122,6 +117,26 @@ autogen/click_plugin.json.hh:
 
 ../../include/osv/printf.hh:
 
+../../include/osv/mount.h:
+
+../../include/osv/vnode.h:
+
+../../bsd/sys/sys/queue.h:
+
+../../include/osv/power.hh:
+
+../../include/api/unistd.h:
+
+autogen/click_plugin.json.hh:
+
+../../modules/httpserver/path_holder.hh:
+
+../../modules/httpserver/routes.hh:
+
+../../include/osv/commands.hh:
+
+../../include/osv/app.hh:
+
 ../../include/osv/elf.hh:
 
 ../../fs/fs.hh:
@@ -129,8 +144,6 @@ autogen/click_plugin.json.hh:
 ../../include/osv/file.h:
 
 ../../include/osv/uio.h:
-
-../../bsd/sys/sys/queue.h:
 
 ../../include/osv/dentry.h:
 

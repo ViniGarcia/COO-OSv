@@ -1,6 +1,7 @@
 #include "click_plugin.hh"
 #include "ControlSocket.hh"
 #include "VNFHeader.hh"
+#include "ClickMetrics.hh"
 #include "autogen/click_plugin.json.hh"
 #include <boost/algorithm/string.hpp>
 #include <boost/format.hpp>
@@ -29,8 +30,11 @@ using namespace click_plugin_json;
 static pid_t pid = 0;
 static shared_ptr<osv::application> click_app;
 static bool running = false;
-static std::string click_ver;
-static ControlSocket *clickSocket;
+static std::string click_ver = "2.0";
+static ClickMetrics *clickMetrics;
+static VNFHeader *header;
+static unsigned long long prevTX = 0;
+static unsigned long long prevRX = 0;
 
 //Adapted from api/run - Runs Click with default parameters
 static std::string exec_click() {
@@ -52,21 +56,19 @@ static std::string exec_click() {
     click_app = osv::application::run(c[0], c, new_program);
     pid = click_app->get_main_thread_id();
     if(pid != 0){
+        sleep(1);
+        clickMetrics = new ClickMetrics((int)pid);
+        header = new VNFHeader();
         running = true;
     }
-    sleep(1);
-    clickSocket = new ControlSocket("localhost",8001);
-    if(clickSocket->accessSuccess){
-        clickSocket->ReadManagementData("version");
-        click_ver = clickSocket->returnSplitData()[2];
-        return ("Sucess: PID " + std::to_string(pid));
-    }
-    return "Error";
+    return ("Sucess: PID " + std::to_string(pid));
+    //return "Error";
 }
 
 //Handle stop request
 static std::string stop_click(){
     if(running == true){
+        clickMetrics->finish();
         click_app->request_termination();
         //waits for click to finish;
         sleep(1);
@@ -87,49 +89,51 @@ static std::string stop_click(){
 
 //Return Click Metrics
 static json::Metrics getMetrics(){
-        //
         using namespace std::chrono;
         httpserver::json::Metrics metrics;
         metrics.time_ms = duration_cast<milliseconds>
             (osv::clock::wall::now().time_since_epoch()).count();
         httpserver::json::Metric metric;
-        //Debug
-        std::random_device rd;     // only used once to initialise (seed) engine
-        std::mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
-        std::uniform_int_distribution<int> uni(-10,10); // guaranteed unbiased
+        
         metric.id = 0;
         metric.name = "CPU Usage";
-        metric.value = 80 + uni(rng);
+        metric.value = 0;
+        if(running) metric.value = clickMetrics->getCPU();
         metrics.list.push(metric);
         metric.id = 1;
         metric.name = "Disk Usage";
-        metric.value = 3;
+        metric.value = clickMetrics->getDisk();
         metrics.list.push(metric);
         metric.id = 2;
         metric.name = "Memory Usage";
-        metric.value = 10;
+        metric.value = clickMetrics->getMemory();
         metrics.list.push(metric);
         metric.id = 3;
         metric.name = "Net TX";
-        metric.value = 20 + uni(rng);
+        metric.value = 0;
+        if(running) metric.value = clickMetrics->getNetTX();
         metrics.list.push(metric);
         metric.id = 4;
         metric.name = "Net RX";
-        metric.value = 20 + uni(rng);
+        metric.value = 0;
+        if(running) metric.value = clickMetrics->getNetRX();
         metrics.list.push(metric);
+
         return metrics;
 }
 
+//Se header é validado retorna info
 static json::VNF_id getVNFDesc(){
-    VNFHeader* header = new VNFHeader();
-    json::VNF_id desc;    
-    if(header->headerValidate("func.click")){
-        desc.id = header->headerGet(VNF_ID);
-        desc.version = header->headerGet(VNF_VERSION);
-        desc.name = header->headerGet(VNF_NAME);
-        desc.description = header->headerGet(VNF_DESCRIPTION);
-        desc.provider = header->headerGet(VNF_PROVIDER);
-    } else{
+    json::VNF_id desc;
+    if(running){
+        if(header->headerValidate("func.click")){
+            desc.id = header->headerGet(VNF_ID);
+            desc.version = header->headerGet(VNF_VERSION);
+            desc.name = header->headerGet(VNF_NAME);
+            desc.description = header->headerGet(VNF_DESCRIPTION);
+            desc.provider = header->headerGet(VNF_PROVIDER);
+        }
+    }else{
         desc.id = "";
         desc.version = "";
         desc.name = "";
@@ -173,6 +177,19 @@ class click_file_writer : public handler_base {
     }
 };
 
+//Update - stop and start (Restart) - OK
+//Restart Button - OK
+//Shutdown VM - OK
+//Tirar Click de Start NF - OK
+//Velocidade
+//Testes e funções
+//--Firewall
+//Boqueia icmp e printa
+//Liberat tcp
+//Bloquear UDP e printa
+//Log
+//Mudar Logo
+
 extern "C" void init(void* arg)
 {
 
@@ -185,28 +202,37 @@ extern "C" void init(void* arg)
 
     //Retorna true se click estiver rodando
     click_is_running.set_handler([](const_req req){
-        return std::to_string(running);
+        int th_finished = 1;
+        sched::with_thread_by_id(pid, [&](sched::thread *t) {
+            if (t && t->get_status() != sched::thread::status::terminated) {
+                th_finished = 0;
+            }
+        });
+        if(th_finished == 1){
+            running = false;
+        }else{
+            running = true;
+        }
+        return running;
     });
 
-    //Inicia uma funcao
-    //Retorna true se sucesso?
+    //Starts click thread
     click_start.set_handler([](const_req req){
         return exec_click();
     });
 
-    //Para a execução de uma funcao
-    //Retorna true se sucesso?
+    //Stop click thread
     click_stop.set_handler([](const_req req){
         return stop_click();
     });
 
+    //Return VNF Description
     click_vnf_id.set_handler([](const_req req){
         return getVNFDesc();
     });
 
     click_write_file.set_handler(new click_file_writer());
 
-    //Temp
     click_read_file.set_handler([](const_req req){
         ifstream Input("/func.click");
         if (!Input.is_open()){
@@ -219,9 +245,10 @@ extern "C" void init(void* arg)
 
     //Return click log
     click_log.set_handler([](const_req req) {
+        if(!running)remove("/click_errors.txt");
         ifstream Input("/click_errors.txt");
         if (!Input.is_open()){
-            return "Error opening file or Click has not been started yet";
+            return "Click is not running";
         };
         string InputData((std::istreambuf_iterator<char>(Input)), std::istreambuf_iterator<char>());
         Input.close();
