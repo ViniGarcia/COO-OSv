@@ -83,7 +83,12 @@ long ClickMetrics::getNetRX(){
 	prevRXValue = rxValue;
 	//std::cout << "RX" << rxResult << "CPU" << cpuResult << "\n";
 	//Bytes/s
-	return ((rxResult / cpuResult) / (double) 150000)*100;
+	long finalResult = ((rxResult / cpuResult) / (double) 10000)*100;
+	if(finalResult>100){
+		return 100;
+	}else{
+		return finalResult;
+	};
 }
 
 /*
@@ -110,7 +115,13 @@ long ClickMetrics::getNetTX(){
 	txResult = txValue - prevTXValue;
 	prevTXValue = txValue;
 	//std::cout << "TX" << (txResult / cpuResult) << "CPU" << cpuResult << "\n";
-	return ((txResult / cpuResult) / (double) 150000)*100;
+	long finalResult = ((txResult / cpuResult) / (double) 10000)*100;
+	if(finalResult>100){
+		return 100;
+	}else{
+		return finalResult;
+	};
+	//return ((txResult / cpuResult) / (double) 150000)*100;
 }
 
 /*
@@ -129,7 +140,6 @@ int ClickMetrics::getCPU(){
     prevClickTime = clickTime;
     //std::cout << "CPU_TIME" << cpuResult << "C_RESULT" << clickResult << "\n";
     return (((double) clickResult / cpuResult) * 100);
-    //return 0;
 }
 
 /*

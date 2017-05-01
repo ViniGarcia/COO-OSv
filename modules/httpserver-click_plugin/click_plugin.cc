@@ -176,19 +176,13 @@ class click_file_writer : public handler_base {
         set_headers(rep, "string");
     }
 };
-
 //Update - stop and start (Restart) - OK
 //Restart Button - OK
 //Shutdown VM - OK
 //Tirar Click de Start NF - OK
-//Velocidade
-//Testes e funções
-//--Firewall
-//Boqueia icmp e printa
-//Liberat tcp
-//Bloquear UDP e printa
-//Log
-//Mudar Logo
+//Log - OK
+//Mudar Logo - OK
+//Velocidade - OK
 
 extern "C" void init(void* arg)
 {
