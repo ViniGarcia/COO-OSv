@@ -83,7 +83,7 @@ long ClickMetrics::getNetRX(){
 	prevRXValue = rxValue;
 	//std::cout << "RX" << rxResult << "CPU" << cpuResult << "\n";
 	//Bytes/s
-	long finalResult = ((rxResult / cpuResult) / (double) 10000)*100;
+	long finalResult = ((rxResult / cpuResult) / (double) 100000)*100;
 	if(finalResult>100){
 		return 100;
 	}else{
@@ -115,7 +115,7 @@ long ClickMetrics::getNetTX(){
 	txResult = txValue - prevTXValue;
 	prevTXValue = txValue;
 	//std::cout << "TX" << (txResult / cpuResult) << "CPU" << cpuResult << "\n";
-	long finalResult = ((txResult / cpuResult) / (double) 10000)*100;
+	long finalResult = ((txResult / cpuResult) / (double) 100000)*100;
 	if(finalResult>100){
 		return 100;
 	}else{
@@ -132,7 +132,7 @@ int ClickMetrics::getCPU(){
 	long clickTime,cpuResult,clickResult;
 	long value_now = duration_cast<milliseconds> (osv::clock::wall::now().time_since_epoch()).count();
 	sched::with_thread_by_id(threadID, [&](sched::thread *t) {
-		clickTime = duration_cast<milliseconds>(t->thread_clock()).count();  
+		clickTime = duration_cast<milliseconds>(t->thread_clock()).count();
     });
     cpuResult = value_now - prevCPUTime;
     prevCPUTime = value_now;
