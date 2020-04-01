@@ -8,6 +8,8 @@
 #include <osv/commands.hh>
 #include <osv/app.hh>
 #include <osv/sched.hh>
+#include <drivers/device.hh>
+#include <drivers/driver.hh>
 #include <errno.h>
 #include <fstream>
 #include <iostream>
@@ -66,6 +68,7 @@ static std::string exec_click() {
 }
 
 //Handle stop request
+/*
 static std::string stop_click(){
     if(running == true){
         clickMetrics->finish();
@@ -85,7 +88,73 @@ static std::string stop_click(){
         return ("Error while stopping");
     }
     return ("Click is not running");
+}*/
+
+static std::string stop_click(){
+    //Test list devices
+    hw::device_manager *devman = hw::device_manager::instance();
+    //devman->list_devices();
+
+    //Test list drivers
+    hw::driver_manager *drvman = hw::driver_manager::instance();
+    //drvman->list_drivers();
+
+    //Com maxnic = 1, segunda nic não adiciona pelo load all
+    //get device via id
+    //register é feito via vid:id, que é igual para dispositivos do mesmo tipo
+    //BDF é a enumeração do dispositivo via pci
+    //precisaria fazer o register via BDF, e não via vid:id
+    //talvez recuperar uma lista com todos dispositivos do mesmo tipo (1af4:1000 para nics virtio)
+    //depois recuperar BDF de cada um dos dispositivos e verificar em qual fazer o attach
+    /*
+    void driver_manager::load_all()
+    {
+        auto dm = device_manager::instance();
+        dm->for_each_device([this] (hw_device* dev) {
+            for (auto probe : _probes) {
+                if (auto drv = probe(dev)) {
+                    dev->set_attached();
+                    _drivers.push_back(drv);
+                    break;
+                }
+            }
+        });
+    }
+
+    //probe de 
+    hw_driver* net::probe(hw_device* dev)
+{
+    if (auto pci_dev = dynamic_cast<pci::device*>(dev)) {
+        if (pci_dev->get_id() == hw_device_id(VIRTIO_VENDOR_ID, VIRTIO_NET_DEVICE_ID)) {
+            if (opt_maxnic && maxnic-- <= 0) {
+                return nullptr;
+            } else {
+                return new net(*pci_dev);
+            }
+        }
+    }
+
+    return nullptr;
+}*/
+    //1af4:1000
+    //id de dispositivos nic virtio
+    hw::hw_device_id id = hw::hw_device_id(6900, 4096);
+
+    //retorna quantidade de dispositivos do tipo existentes (no caso nics virtio)
+    int num_devices = devman->get_num_devices(id);
+
+    for(int i=0;i<num_devices;i++){
+        hw::hw_device* temp_dev = devman->get_device(id,i);
+        //print BDF
+        temp_dev->print();
+        //print se dispositivo está associado a um driver
+        printf("%d\n",temp_dev->is_attached());
+    }
+
+    return ("Not implemented");
 }
+
+
 
 //Return Click Metrics
 static json::Metrics getMetrics(){

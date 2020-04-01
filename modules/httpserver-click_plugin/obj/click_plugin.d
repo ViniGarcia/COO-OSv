@@ -31,7 +31,13 @@ obj/click_plugin.o: click_plugin.cc click_plugin.hh \
  ../../include/osv/dentry.h ../../include/osv/addr_range.hh \
  ../../include/osv/error.h ../../include/osv/mmu-defs.hh \
  ../../include/osv/virt_to_phys.hh ../../arch/x64/arch-mmu.hh \
- ../../arch/x64/arch-elf.hh
+ ../../arch/x64/arch-elf.hh ../../drivers/device.hh \
+ ../../drivers/driver.hh ../../include/osv/pci.hh \
+ ../../drivers/pci-generic.hh ../../arch/common/pci-config.hh \
+ ../../arch/x64/arch-pci.hh ../../drivers/pci-device.hh \
+ ../../drivers/pci-function.hh ../../include/osv/mmio.hh \
+ ../../arch/x64/processor.hh ../../drivers/device.hh \
+ ../../include/osv/interrupt.hh ../../arch/x64/arch-interrupt.hh
 
 click_plugin.hh:
 
@@ -158,3 +164,29 @@ autogen/click_plugin.json.hh:
 ../../arch/x64/arch-mmu.hh:
 
 ../../arch/x64/arch-elf.hh:
+
+../../drivers/device.hh:
+
+../../drivers/driver.hh:
+
+../../include/osv/pci.hh:
+
+../../drivers/pci-generic.hh:
+
+../../arch/common/pci-config.hh:
+
+../../arch/x64/arch-pci.hh:
+
+../../drivers/pci-device.hh:
+
+../../drivers/pci-function.hh:
+
+../../include/osv/mmio.hh:
+
+../../arch/x64/processor.hh:
+
+../../drivers/device.hh:
+
+../../include/osv/interrupt.hh:
+
+../../arch/x64/arch-interrupt.hh:

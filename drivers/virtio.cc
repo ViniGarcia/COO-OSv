@@ -82,11 +82,18 @@ void virtio_driver::dump_config()
     _dev.get_bdf(B, D, F);
 
     _dev.dump_config();
-    virtio_d("%s [%x:%x.%x] vid:id=%x:%x", get_name().c_str(),
+    virtio_d("%s [%x:%x.%x] vid:id=%x:%x\n", get_name().c_str(),
         (u16)B, (u16)D, (u16)F,
         _dev.get_vendor_id(),
         _dev.get_device_id());
 
+    //debug
+    debug("%s [%x:%x.%x] vid:id=%x:%x\n", get_name().c_str(),
+        (u16)B, (u16)D, (u16)F,
+        _dev.get_vendor_id(),
+        _dev.get_device_id());
+
+    
     virtio_d("    virtio features: ");
     for (int i = 0; i < 32; i++)
         virtio_d(" %d ", get_device_feature_bit(i));
