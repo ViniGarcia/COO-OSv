@@ -57,6 +57,7 @@ namespace hw {
 
         bool is_attached() { return _attached; }
         void set_attached() { _attached = true; }
+        void set_detached() { _attached = false; }
     };
 
 

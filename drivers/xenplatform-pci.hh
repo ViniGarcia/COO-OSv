@@ -24,6 +24,8 @@ public:
     virtual std::string get_name() const {
         return std::string("xen-platform-pci");
     }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
 
 private:
     pci::device& _dev;

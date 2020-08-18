@@ -36,6 +36,12 @@ public:
     virtual std::string get_name() const override {
         return "virtio-assigned";
     }
+    virtual bool sleep() override { 
+	return false; 
+    }
+    virtual bool wake() override { 
+        return false; 
+    }
     virtual u32 get_driver_features() override {
         return _driver_features;
     }

@@ -31,6 +31,8 @@ public:
     void push_queue(const char *str, size_t len);
     static hw_driver* probe(hw_device* hw_dev);
     std::string get_name() const { return std::string("VGAConsole"); }
+    bool sleep() { return false; }
+    bool wake() { return false; }
     void dump_config();
 private:
     enum {

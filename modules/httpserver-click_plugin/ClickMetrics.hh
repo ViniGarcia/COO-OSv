@@ -17,6 +17,7 @@
 class ClickMetrics {
     private:
     int threadID;
+    bool clickToken;
     long prevCPUTime;
     long prevClickTime;
     long prevTXValue;
@@ -30,7 +31,7 @@ class ClickMetrics {
 	void findInputAndOutputs();
 
     public:
-    ClickMetrics(int id);
+    ClickMetrics(int id, bool click);
     void finish();
     int getCPU();
     int getDisk();

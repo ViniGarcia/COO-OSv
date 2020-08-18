@@ -21,9 +21,8 @@ namespace hw {
 
         // Drivers are indexed by their names
         virtual std::string get_name() const = 0;
-
-        // virtual bool sleep() = 0;
-        // virtual bool wake() = 0;
+        virtual bool sleep() = 0;
+        virtual bool wake() = 0;
         // ...
 
         virtual void dump_config() = 0;
@@ -43,14 +42,23 @@ namespace hw {
         }
 
         void register_driver(std::function<hw_driver* (hw_device*)> probe);
+        void register_unlimited_driver(std::function<hw_driver* (hw_device*)> unlimited_probe);
+        
         void load_all();
+        void load_unlimited(hw_device* dev);
+
         void unload_all();
+	void unload_unlimited();
+
         void list_drivers();
 
     private:
         static driver_manager* _instance;
         std::vector<std::function<hw_driver* (hw_device*)>> _probes;
         std::vector<hw_driver*> _drivers;
+	std::vector<std::function<hw_driver* (hw_device*)>> _unlimited_probes;
+        std::vector<hw_driver*> _unlimited_drivers;
+	std::vector<hw_device*> _unlimited_devices;
     };
 }
 

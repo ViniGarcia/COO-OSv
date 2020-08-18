@@ -198,6 +198,8 @@ public:
     pci::device& pci_device() { return _pci_dev; }
     static hw_driver* probe(hw_device* hw_dev);
     virtual std::string get_name() const { return _driver_name; }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
     bool parse_pci_config();
     void dump_config();
     bool ack_irq();

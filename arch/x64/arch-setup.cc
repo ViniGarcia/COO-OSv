@@ -282,6 +282,7 @@ void arch_init_drivers()
     } else {
         drvman->register_driver(virtio::net::probe);
     }
+    drvman->register_unlimited_driver(virtio::net::unlimited_probe);
     drvman->register_driver(virtio::rng::probe);
     drvman->register_driver(xenfront::xenplatform_pci::probe);
     drvman->register_driver(ahci::hba::probe);

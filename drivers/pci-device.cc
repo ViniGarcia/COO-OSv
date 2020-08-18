@@ -6,6 +6,7 @@
  */
 
 #include <osv/pci.hh>
+#include <osv/debug.hh>
 #include "drivers/pci-device.hh"
 #include "drivers/pci-function.hh"
 
@@ -30,7 +31,7 @@ namespace pci {
         // Read subsystem vendor id & id
         _subsystem_vid = pci_readw(PCI_CFG_SUBSYSTEM_VENDOR_ID);
         _subsystem_id = pci_readw(PCI_CFG_SUBSYSTEM_ID);
-
+        
         // Parse PCI device BARs
         u32 pos = PCI_CFG_BAR_1;
         int idx = 1;
@@ -70,6 +71,13 @@ namespace pci {
         function::dump_config();
 
         pci_d("    subsys_vid:subsys_id %x:%x", _subsystem_vid, _subsystem_id);
+        //nao quero usar gdb
+        //debug("    subsys_vid:subsys_id %x:%x\n", _subsystem_vid, _subsystem_id);
+        //GET_BDF
+        u8 B, D, F;
+        get_bdf(B, D, F);
+
+        debug("BDF: %x:%x.%x\n",(u16) B, (u16) D, (u16) F);
     }
 
 }

@@ -945,7 +945,6 @@ ether_ifdetach(struct ifnet *ifp)
 
 	bpfdetach(ifp);
 #endif
-
 	if_detach(ifp);
 }
 

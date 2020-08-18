@@ -22,6 +22,8 @@ namespace xenfront {
 
         virtual void dump_config();
         virtual std::string get_name() const { return _driver_name; }
+        virtual bool sleep() { return false; }
+        virtual bool wake() { return false; }
         const std::string &get_node_path() { return _node_path; }
 
         int num_children() { return _children.size(); }

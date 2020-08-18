@@ -57,6 +57,7 @@
 
 #include <bsd/sys/compat/linux/linux.h>
 #include <bsd/sys/compat/linux/linux_socket.h>
+#include <bsd/sys/compat/linux/linux_netlink.h>
 
 #define __NEED_sa_family_t
 #include <bits/alltypes.h>
@@ -256,7 +257,10 @@ linux_to_bsd_domain(int domain)
 		return (AF_IPX);
 	case LINUX_AF_APPLETALK:
 		return (AF_APPLETALK);
+	case LINUX_AF_NETLINK:
+		return (AF_NETLINK);
 	}
+
 	return (-1);
 }
 
@@ -279,6 +283,8 @@ bsd_to_linux_domain(int domain)
 		return (LINUX_AF_IPX);
 	case AF_APPLETALK:
 		return (LINUX_AF_APPLETALK);
+	case AF_NETLINK:
+		return (LINUX_AF_NETLINK);
 	}
 	return (-1);
 }

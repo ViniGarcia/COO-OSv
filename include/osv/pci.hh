@@ -39,7 +39,7 @@
  */
 
 #include "drivers/pci-generic.hh"
-#include "pci-config.hh"
+#include "arch/common/pci-config.hh"
 #include "arch-pci.hh"
 
 #endif /* PCI_HH_ */

@@ -168,6 +168,7 @@ void arch_init_drivers()
 
     // Initialize all drivers
     hw::driver_manager* drvman = hw::driver_manager::instance();
+    drvman->before_init();
     drvman->register_driver(virtio::rng::probe);
     drvman->register_driver(virtio::blk::probe);
     drvman->register_driver(virtio::net::probe);

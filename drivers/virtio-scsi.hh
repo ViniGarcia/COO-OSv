@@ -149,6 +149,8 @@ public:
     ~scsi();
 
     virtual std::string get_name() const { return _driver_name; }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
     void read_config();
 
     virtual u32 get_driver_features();

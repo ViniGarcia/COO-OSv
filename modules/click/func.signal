@@ -1,0 +1,4 @@
+import socket
+
+signal_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+signal_socket.sendto('end_py', ('', 8001))

@@ -66,10 +66,22 @@ void dhcp_start(bool wait)
     net_dhcp_worker.start(wait);
 }
 
+void dhcp_start_except(bool wait, std::string interface)
+{
+    // Initialize the global DHCP worker
+    net_dhcp_worker.init();
+    net_dhcp_worker.start_except(wait, interface);
+}
+
 // Send DHCP release, for example at shutdown.
 void dhcp_release()
 {
     net_dhcp_worker.release();
+}
+
+void dhcp_release_except(std::string interface)
+{
+    net_dhcp_worker.release_except(interface);
 }
 
 void dhcp_renew(bool wait)
@@ -716,11 +728,15 @@ namespace dhcp {
         // FIXME: retry on timeout and restart DORA sequence if it timeout a
         //        couple of time
     }
+    
 
+    std::string dhcp_interface_state::get_address(){
+        return _client_addr.to_string();
+    }
     ///////////////////////////////////////////////////////////////////////////
 
     dhcp_worker::dhcp_worker()
-        : _dhcp_thread(nullptr), _have_ip(false), _waiter(nullptr)
+        : _dhcp_thread(nullptr), _have_ip(1), _waiter(nullptr)
     {
 
     }
@@ -758,7 +774,7 @@ namespace dhcp {
     void dhcp_worker::_send_and_wait(bool wait, dhcp_interface_state_send_packet iface_func)
     {
         // When doing renew, we still have IP, but want to reuse the flag.
-        _have_ip = false;
+        _have_ip = _universe.size();
         do {
             // Send discover or renew packets!
             for (auto &it: _universe) {
@@ -773,10 +789,39 @@ namespace dhcp {
                 using namespace osv::clock::literals;
                 t.set(3_s);
 
-                sched::thread::wait_until([&]{ return _have_ip || t.expired(); });
+                sched::thread::wait_until([&]{ return (_have_ip == 0) || t.expired(); });
                 _waiter = nullptr;
             }
-        } while (!_have_ip && wait);
+        } while (_have_ip && wait);
+    }
+
+    void dhcp_worker::_send_and_wait_except(bool wait, dhcp_interface_state_send_packet iface_func, std::string interface)
+    {
+        // When doing renew, we still have IP, but want to reuse the flag.
+        _have_ip = _universe.size();
+        do {
+            // Send discover or renew packets!
+            for (auto &it: _universe) {
+		if(strcmp(interface.c_str(), it.first->if_xname)){
+                    (it.second->*iface_func)();
+		}
+		else{
+		    _have_ip = _have_ip - 1;
+		}
+            }
+
+            if (wait) {
+                dhcp_i("Waiting for IP...");
+                _waiter = sched::thread::current();
+
+                sched::timer t(*sched::thread::current());
+                using namespace osv::clock::literals;
+                t.set(3_s);
+
+                sched::thread::wait_until([&]{ return (_have_ip == 0) || t.expired(); });
+                _waiter = nullptr;
+            }
+        } while (_have_ip && wait);
     }
 
     void dhcp_worker::start(bool wait)
@@ -784,13 +829,31 @@ namespace dhcp {
         // FIXME: clear routing table (use case run dhclient 2nd time)
         _send_and_wait(wait, &dhcp_interface_state::discover);
     }
+    
+    void dhcp_worker::start_except(bool wait, std::string interface)
+    {
+	// FIXME: clear routing table (use case run dhclient 2nd time)
+        _send_and_wait_except(wait, &dhcp_interface_state::discover, interface);
+    }
 
     void dhcp_worker::release()
     {
         for (auto &it: _universe) {
             it.second->release();
         }
-        _have_ip = false;
+        _have_ip = 1;
+        // Wait a bit, so hopefully UDP release packets will be actually put on wire.
+        usleep(1000);
+    }
+
+    void dhcp_worker::release_except(std::string interface)
+    {
+        for (auto &it: _universe) {
+	    if(strcmp(interface.c_str(), it.first->if_xname)){
+                it.second->release();
+	    }
+        }
+        _have_ip = 1;
         // Wait a bit, so hopefully UDP release packets will be actually put on wire.
         usleep(1000);
     }
@@ -824,7 +887,7 @@ namespace dhcp {
 
             // Check if we got an ip
             if (it->second->is_acknowledged()) {
-                _have_ip = true;
+                _have_ip = _have_ip - 1;
                 if (_waiter) {
                     _waiter->wake();
                 }

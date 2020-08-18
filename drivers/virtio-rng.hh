@@ -30,6 +30,8 @@ public:
     virtual ~rng();
 
     virtual std::string get_name() const { return "virtio-rng"; }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
 
     virtual size_t get_random_bytes(char* buf, size_t size) override;
 

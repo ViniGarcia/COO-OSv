@@ -160,13 +160,18 @@ struct VNF_id : public json::json_base {
      */
   json::json_element< std::string > name;
 
+    /**
+     * VNF Framework
+     */
+  json::json_element< std::string > framework;
+
 void register_params() {
   add(&provider,"provider");
   add(&description,"description");
   add(&version,"version");
   add(&id,"id");
   add(&name,"name");
-
+  add(&framework,"framework");
 }
 VNF_id() {
   register_params();
@@ -178,7 +183,7 @@ VNF_id(const VNF_id & e) {
   version = e.version;
   id = e.id;
   name = e.name;
-
+  framework = e.framework;
 }
 template<class T>
 VNF_id& operator=(const T& e) {
@@ -187,7 +192,7 @@ VNF_id& operator=(const T& e) {
   version = e.version;
   id = e.id;
   name = e.name;
-
+  framework = e.framework;
   return *this;
 }
 VNF_id& operator=(const VNF_id& e) {
@@ -196,7 +201,7 @@ VNF_id& operator=(const VNF_id& e) {
   version = e.version;
   id = e.id;
   name = e.name;
-
+  framework = e.framework;
   return *this;
 }
 template<class T>
@@ -206,7 +211,7 @@ VNF_id& update(T& e) {
   e.version = version;
   e.id = id;
   e.name = name;
-
+  e.framework = framework;
   return *this;
 }
 };

@@ -126,6 +126,8 @@ public:
     ~pvscsi();
 
     virtual std::string get_name() const { return _driver_name; }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
     static struct pvscsi_priv *get_priv(struct bio *bio) {
         return reinterpret_cast<struct pvscsi_priv*>(bio->bio_dev->private_data);
     }

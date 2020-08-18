@@ -24,7 +24,9 @@
 
 extern "C" {
 void dhcp_start(bool wait);
+void dhcp_start_except(bool wait, std::string interface);
 void dhcp_release();
+void dhcp_release_except(std::string interface);
 void dhcp_renew(bool wait);
 }
 
@@ -238,6 +240,7 @@ namespace dhcp {
         void process_packet(struct mbuf*);
         void state_discover(dhcp_mbuf &dm);
         void state_request(dhcp_mbuf &dm);
+	std::string get_address();
 
         bool is_acknowledged() { return (_state == DHCP_ACKNOWLEDGE); }
 
@@ -265,8 +268,10 @@ namespace dhcp {
         void init();
         // Send discover packets
         void start(bool wait);
+	void start_except(bool wait, std::string interface);
         // Send release packet for all DHCP IPs.
         void release();
+	void release_except(std::string interface);
         void renew(bool wait);
 
         void dhcp_worker_fn();
@@ -280,9 +285,10 @@ namespace dhcp {
         std::map<struct ifnet*, dhcp_interface_state*> _universe;
 
         // Wait for IP
-        bool _have_ip;
+        int _have_ip;
         sched::thread * _waiter;
         void _send_and_wait(bool wait, dhcp_interface_state_send_packet iface_func);
+	void _send_and_wait_except(bool wait, dhcp_interface_state_send_packet iface_func, std::string interface);
     };
 
 } // namespace dhcp

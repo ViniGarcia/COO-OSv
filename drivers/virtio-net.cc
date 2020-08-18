@@ -316,9 +316,19 @@ net::~net()
     //
     // Since this will involve the rework of the virtio layer - make it for
     // all virtio drivers in a separate patchset.
-
+    
     ether_ifdetach(_ifn);
     if_free(_ifn);
+}
+
+bool net::sleep(){
+    ether_ifdetach(_ifn);
+    return true;
+}
+
+bool net::wake(){
+    ether_ifattach(_ifn, _config.mac);
+    return true;
 }
 
 void net::read_config()
@@ -865,7 +875,16 @@ hw_driver* net::probe(hw_device* dev)
             }
         }
     }
+    return nullptr;
+}
 
+hw_driver* net::unlimited_probe(hw_device* dev)
+{
+    if (auto pci_dev = dynamic_cast<pci::device*>(dev)) {
+        if (pci_dev->get_id() == hw_device_id(VIRTIO_VENDOR_ID, VIRTIO_NET_DEVICE_ID)) {
+            return new net(*pci_dev);
+        }
+    }
     return nullptr;
 }
 

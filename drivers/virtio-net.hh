@@ -208,6 +208,8 @@ public:
     virtual ~net();
 
     virtual std::string get_name() const { return _driver_name; }
+    virtual bool sleep();
+    virtual bool wake();
     void read_config();
 
     virtual u32 get_driver_features();
@@ -222,8 +224,9 @@ public:
     static void do_free_buffer(void* buffer);
 
     bool ack_irq();
-
+    
     static hw_driver* probe(hw_device* dev);
+    static hw_driver* unlimited_probe(hw_device* dev);
 
     /**
      * Fill the if_data buffer with data from our iface including those that

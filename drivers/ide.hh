@@ -23,6 +23,8 @@ public:
     virtual ~ide_drive();
 
     virtual std::string get_name(void) const { return _driver_name; }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
 
     virtual void dump_config(void);
 

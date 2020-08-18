@@ -264,6 +264,8 @@ public:
     virtual ~vmxnet3() {};
 
     virtual std::string get_name() const { return "vmxnet3"; }
+    virtual bool sleep() { return false; }
+    virtual bool wake() { return false; }
 
     virtual void dump_config(void);
     int transmit(struct mbuf* m_head);

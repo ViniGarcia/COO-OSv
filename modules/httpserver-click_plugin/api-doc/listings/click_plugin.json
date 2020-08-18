@@ -51,7 +51,7 @@
                     "summary": "Start Click",
                     "notes": "Return true if start is sucessful",
                     "type": "boolean",
-                    "nickname": "click_start",
+                    "nickname": "start",
                     "parameters": [
                     ],
                     "deprecated": "false"
