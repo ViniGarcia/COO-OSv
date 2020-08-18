@@ -51,7 +51,7 @@
                     "summary": "Start Click",
                     "notes": "Return true if start is sucessful",
                     "type": "boolean",
-                    "nickname": "start",
+                    "nickname": "click_start",
                     "parameters": [
                     ],
                     "deprecated": "false"
@@ -225,6 +225,10 @@
                 "provider": {
                     "type" : "string",
                     "description": "VNF Provider"
+                },
+		"framework": {
+                    "type" : "string",
+                    "description": "VNF Framework"
                 }
             }
         }        

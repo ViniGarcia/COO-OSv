@@ -136,19 +136,24 @@ Metrics& update(T& e) {
  */
 struct VNF_id : public json::json_base {
     /**
-     * VNF Provider
-     */
-  json::json_element< std::string > provider;
-
-    /**
      * VNF description
      */
   json::json_element< std::string > description;
 
     /**
+     * VNF Framework
+     */
+  json::json_element< std::string > framework;
+
+    /**
      * Version of VNF
      */
   json::json_element< std::string > version;
+
+    /**
+     * VNF Provider
+     */
+  json::json_element< std::string > provider;
 
     /**
      * VNF Unique Identifier
@@ -160,58 +165,58 @@ struct VNF_id : public json::json_base {
      */
   json::json_element< std::string > name;
 
-    /**
-     * VNF Framework
-     */
-  json::json_element< std::string > framework;
-
 void register_params() {
-  add(&provider,"provider");
   add(&description,"description");
+  add(&framework,"framework");
   add(&version,"version");
+  add(&provider,"provider");
   add(&id,"id");
   add(&name,"name");
-  add(&framework,"framework");
+
 }
 VNF_id() {
   register_params();
 }
 VNF_id(const VNF_id & e) {
   register_params();
-  provider = e.provider;
   description = e.description;
+  framework = e.framework;
   version = e.version;
+  provider = e.provider;
   id = e.id;
   name = e.name;
-  framework = e.framework;
+
 }
 template<class T>
 VNF_id& operator=(const T& e) {
-  provider = e.provider;
   description = e.description;
+  framework = e.framework;
   version = e.version;
+  provider = e.provider;
   id = e.id;
   name = e.name;
-  framework = e.framework;
+
   return *this;
 }
 VNF_id& operator=(const VNF_id& e) {
-  provider = e.provider;
   description = e.description;
+  framework = e.framework;
   version = e.version;
+  provider = e.provider;
   id = e.id;
   name = e.name;
-  framework = e.framework;
+
   return *this;
 }
 template<class T>
 VNF_id& update(T& e) {
-  e.provider = provider;
   e.description = description;
+  e.framework = framework;
   e.version = version;
+  e.provider = provider;
   e.id = id;
   e.name = name;
-  e.framework = framework;
+
   return *this;
 }
 };
