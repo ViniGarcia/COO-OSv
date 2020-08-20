@@ -25,6 +25,7 @@
 
 extern "C" {
 void dhcp_start_except(bool wait, std::string interface);
+void dhcp_wait_assigment();
 void dhcp_release_except(std::string interface);
 }
 
@@ -72,7 +73,7 @@ void start_virtio() {
     });
     if (has_if){
         dhcp_start_except(true, "eth0");
-	usleep(1000);
+	dhcp_wait_assigment();
     }
 }
 
@@ -148,6 +149,7 @@ static std::string stop_python2() {
     char buffer[7] = {'e', 'n', 'd', '_', 'p', 'y', '\0'};
     sendto(nf_stop, buffer, sizeof(buffer), 0, (struct sockaddr *) &nf_serv, nf_serv_len);   
     close(nf_stop);
+    app->join();
 
     if (!header->headerGet(VNF_NETWORK).compare("VirtIO")) stop_virtio();
 

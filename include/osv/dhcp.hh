@@ -25,6 +25,7 @@
 extern "C" {
 void dhcp_start(bool wait);
 void dhcp_start_except(bool wait, std::string interface);
+void dhcp_wait_assigment();
 void dhcp_release();
 void dhcp_release_except(std::string interface);
 void dhcp_renew(bool wait);
@@ -228,7 +229,8 @@ namespace dhcp {
             DHCP_INIT,
             DHCP_DISCOVER,
             DHCP_REQUEST,
-            DHCP_ACKNOWLEDGE
+            DHCP_ACKNOWLEDGE,
+	    DHCP_ASSIGNED
         };
 
         dhcp_interface_state(struct ifnet* ifp);
@@ -242,7 +244,8 @@ namespace dhcp {
         void state_request(dhcp_mbuf &dm);
 	std::string get_address();
 
-        bool is_acknowledged() { return (_state == DHCP_ACKNOWLEDGE); }
+        bool is_acknowledged() { return ((_state == DHCP_ACKNOWLEDGE) || (_state == DHCP_ASSIGNED)); }
+	bool is_assigned() { return (_state == DHCP_ASSIGNED); }
 
     private:
         state _state;
@@ -269,6 +272,8 @@ namespace dhcp {
         // Send discover packets
         void start(bool wait);
 	void start_except(bool wait, std::string interface);
+	// Wait for assigment
+	void wait_assigment();
         // Send release packet for all DHCP IPs.
         void release();
 	void release_except(std::string interface);

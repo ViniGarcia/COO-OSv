@@ -73,6 +73,10 @@ void dhcp_start_except(bool wait, std::string interface)
     net_dhcp_worker.start_except(wait, interface);
 }
 
+void dhcp_wait_assigment(){
+    net_dhcp_worker.wait_assigment();
+}
+
 // Send DHCP release, for example at shutdown.
 void dhcp_release()
 {
@@ -665,7 +669,7 @@ namespace dhcp {
         if (dm.get_message_type() == DHCP_MT_ACK) {
             dhcp_i("Server acknowledged IP %s for interface %s with time to lease in seconds: %d",
                    dm.get_your_ip().to_string().c_str(), _ifp->if_xname, dm.get_lease_time_sec());
-            _state = DHCP_ACKNOWLEDGE;
+	    _state = DHCP_ACKNOWLEDGE;
             _client_addr = dm.get_your_ip();
             _server_addr = dm.get_dhcp_server_ip();
 
@@ -716,6 +720,7 @@ namespace dhcp {
             if (dm.get_hostname().size()) {
 	        sethostname(dm.get_hostname().c_str(), dm.get_hostname().size());
             }
+	    _state = DHCP_ASSIGNED;
             // TODO: setup lease
         } else if (dm.get_message_type() == DHCP_MT_NAK) {
             // from RFC 2131 section 3.1.5
@@ -791,6 +796,7 @@ namespace dhcp {
 
                 sched::thread::wait_until([&]{ return (_have_ip == 0) || t.expired(); });
                 _waiter = nullptr;
+
             }
         } while (_have_ip && wait);
     }
@@ -820,8 +826,34 @@ namespace dhcp {
 
                 sched::thread::wait_until([&]{ return (_have_ip == 0) || t.expired(); });
                 _waiter = nullptr;
+
             }
         } while (_have_ip && wait);
+    }
+
+    void dhcp_worker::wait_assigment(){
+	bool waiting;	
+	
+	while (true){
+	    waiting = false;
+
+	    for (auto &it: _universe){
+		if (!it.second->is_assigned()){
+		    waiting = true;
+		    break;
+		}
+	    }
+
+	    if (waiting){
+		_waiter = sched::thread::current();
+                sched::timer t(*sched::thread::current());
+                using namespace osv::clock::literals;
+                t.set(1_s);
+                sched::thread::wait_until([&]{ return t.expired(); });
+                _waiter = nullptr;
+	    }
+	    else break;
+	}
     }
 
     void dhcp_worker::start(bool wait)
@@ -886,9 +918,10 @@ namespace dhcp {
             it->second->process_packet(m);
 
             // Check if we got an ip
-            if (it->second->is_acknowledged()) {
+            if (it->second->is_assigned()) {
                 _have_ip = _have_ip - 1;
-                if (_waiter) {
+                if ((_have_ip == 0) && (_waiter)) {
+		    usleep(1000);
                     _waiter->wake();
                 }
             }
