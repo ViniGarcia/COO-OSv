@@ -44,28 +44,93 @@ void ClickMetrics::finish(){
 
 //Iterate over all elements in the NF, and save the ids for Inputs and Outputs
 void ClickMetrics::findInputAndOutputs(){
-  if (!this->clickToken) return; 
-  std::vector<std::string> response;
+    if (!this->clickToken) return;
+    std::vector<std::string> response;
 
-  this->clickSocket->ReadManagementData("list");
-  response = clickSocket->returnSplitData();
-	
-  if(response[0].find("200") != std::string::npos){
-    int total_elements = std::stoi(response[2]);
-    for(int i = 1 ; i <= total_elements ; i++){
-      this->clickSocket->ReadManagementData(std::to_string(i)+".in_bytes");
-      if(this->clickSocket->accessSuccess){
-        this->rx_ids.push_back(i);
-      }
-    };
+    this->clickSocket->ReadManagementData("list");
+    response = clickSocket->returnSplitData();
+    if(response[0].find("200") != std::string::npos){
+        int total_elements = std::stoi(response[2]);
+        for(int i = 1 ; i <= total_elements ; i++){
+            this->clickSocket->ReadManagementData(std::to_string(i)+".in_bytes");
+            if(this->clickSocket->accessSuccess){
+                this->rx_ids.push_back(i);
+            }
+        }
 
-    for(int i = 1 ; i <= total_elements ; i++){
-      this->clickSocket->ReadManagementData(std::to_string(i)+".out_bytes");
-      if(this->clickSocket->accessSuccess){
-        this->tx_ids.push_back(i);
-      }
+        for(int i = 1 ; i <= total_elements ; i++){
+            this->clickSocket->ReadManagementData(std::to_string(i)+".out_bytes");
+            if(this->clickSocket->accessSuccess){
+                this->tx_ids.push_back(i);
+            }
+        }
     }
-  }
+}
+
+static httpserver::json::Interface get_interface(const std::string& name, ifnet* ifp, long time)
+{
+    httpserver::json::Interface_config ifc;
+    httpserver::json::Interface_data ifd;
+    httpserver::json::Interface f;
+    osv::network::interface intf(name);
+
+
+    if_data cur_data = { 0 };
+    if (!set_interface_info(ifp, cur_data, intf)) {
+        return f;
+    }
+
+    ifc = intf;
+    f.config = ifc;
+    ifd = cur_data;
+    f.data = ifd;
+    f.time = time;
+    return f;
+}
+
+void ifconfig(std::vector<httpserver::json::Interface> ifaces){
+    auto time = std::chrono::duration_cast<std::chrono::microseconds>
+                    (osv::clock::uptime::now().time_since_epoch()).count();
+
+    for (unsigned int i = 0; i <= osv::network::number_of_interfaces(); i++) {
+        auto* ifp = osv::network::get_interface_by_index(i);
+
+        if (ifp != nullptr) {
+            ifaces.push_back(get_interface(osv::network::get_interface_name(ifp), ifp, time));
+        }
+    }
+}
+
+void ClickMetrics::genericInOutBytes(long *aggregate){
+    std::vector<httpserver::json::Interface> ifaces;
+
+    aggregate[0] = 0;
+    aggregate[1] = 0;
+
+    ifconfig(ifaces);
+    for (auto &i : ifaces){
+	aggregate[0] = aggregate[0] + i.data().ifi_ibytes();
+	aggregate[1] = aggregate[1] + i.data().ifi_obytes();
+    }
+}
+
+void ClickMetrics::clickInOutBytes(long *aggregate){
+    std::vector<std::string> returnValue;	
+    
+    for(int i = 0; i < rx_ids.size(); i++){
+        this->clickSocket->ReadManagementData(std::to_string(rx_ids[i])+".in_bytes");
+        if(this->clickSocket->accessSuccess){
+            returnValue = clickSocket->returnSplitData();
+            aggregate[0] = aggregate[0] + std::stoll(returnValue[2]);
+        }
+    }
+    for(int i = 0; i < tx_ids.size(); i++){
+        this->clickSocket->ReadManagementData(std::to_string(tx_ids[i])+".out_bytes");
+        if(this->clickSocket->accessSuccess){
+            returnValue = this->clickSocket->returnSplitData();
+            aggregate[1] += std::stoll(returnValue[2]);
+        }
+    }
 }
 
 /*
@@ -74,34 +139,22 @@ void ClickMetrics::findInputAndOutputs(){
 * subtract this value from the previous value. Same thing with CPU Time. After we divide
 * the bytes by the ms between each request, and finally divide by a default Link Speed(1Gbit)
 */
-long ClickMetrics::getNetRX(){
-  if (!this->clickToken) return 0; 
-  using namespace std::chrono;
-  std::vector<std::string> response;
-	
-  unsigned long long rxValue, rxResult;
-  long cpuResult;
-  long value_now = duration_cast<milliseconds> (osv::clock::wall::now().time_since_epoch()).count();
+long ClickMetrics::getNetRX(long rxValue){
+    using namespace std::chrono;
 
-  for(int i = 0; i < rx_ids.size(); i++){
-    this->clickSocket->ReadManagementData(std::to_string(rx_ids[i])+".in_bytes");
-    if(this->clickSocket->accessSuccess){
-      response = clickSocket->returnSplitData();
-      rxValue += std::stoll(response[2]);
+    long curCPURxTime = duration_cast<milliseconds> (osv::clock::wall::now().time_since_epoch()).count();
+    long cpuResult = curCPURxTime - this->prevCPURxTime;
+    this->prevCPURxTime = curCPURxTime;
+  
+    long rxResult = rxValue - this->prevRXValue;
+    this->prevRXValue = rxValue;
+    
+    if (cpuResult > 0){
+        long finalResult = ((rxResult / cpuResult) / (double) 10000)*100;
+        if(finalResult > 100) return 100;
+        else return finalResult;
     }
-  }
-
-  cpuResult = ((value_now - this->prevCPURxTime));
-  this->prevCPURxTime = value_now;
-  rxResult = rxValue - this->prevRXValue;
-  this->prevRXValue = rxValue;
-
-  long finalResult = ((rxResult / cpuResult) / (double) 10000)*100;
-  if(finalResult>100){
-    return 100;
-  }else{
-    return finalResult;
-  };
+    return 0;
 }
 
 /*
@@ -110,34 +163,22 @@ long ClickMetrics::getNetRX(){
 * subtract this value from the previous value. Same thing with CPU Time. After we divide
 * the bytes by the ms between each request, and finally divide by a default Link Speed(1Gbit)
 */
-long ClickMetrics::getNetTX(){
-  if (!this->clickToken) return 0; 
-  using namespace std::chrono;
+long ClickMetrics::getNetTX(long txValue){
+    using namespace std::chrono;
 
-  std::vector<std::string> response;
-  unsigned long long txValue, txResult;
-  long cpuResult;
-  long value_now = duration_cast<milliseconds> (osv::clock::wall::now().time_since_epoch()).count();
+    long curCPUTxTime = duration_cast<milliseconds> (osv::clock::wall::now().time_since_epoch()).count();
+    long cpuResult = curCPUTxTime - this->prevCPUTxTime;
+    this->prevCPUTxTime = curCPUTxTime;
 
-  for(int i = 0; i < tx_ids.size(); i++){
-    this->clickSocket->ReadManagementData(std::to_string(tx_ids[i])+".out_bytes");
-    if(this->clickSocket->accessSuccess){
-      response = this->clickSocket->returnSplitData();
-      txValue += std::stoll(response[2]);
+    long txResult = txValue - this->prevTXValue;
+    this->prevTXValue = txValue;
+    
+    if (cpuResult > 0){
+        long finalResult = ((txResult / cpuResult) / (double) 10000)*100;
+        if(finalResult>100) return 100;
+        else return finalResult;
     }
-  }
-
-  cpuResult = ((value_now - this->prevCPUTxTime));
-  this->prevCPUTxTime = value_now;
-  txResult = txValue - this->prevTXValue;
-  this->prevTXValue = txValue;
-
-  long finalResult = ((txResult / cpuResult) / (double) 10000)*100;
-  if(finalResult>100){
-    return 100;
-  }else{
-    return finalResult;
-  };
+    return 0;
 }
 
 /*

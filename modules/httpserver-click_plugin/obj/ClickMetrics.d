@@ -14,7 +14,21 @@ obj/ClickMetrics.o: ClickMetrics.cc ClickMetrics.hh \
  ../../include/osv/debug.h ../../include/osv/printf.hh \
  ../../include/osv/mount.h ../../include/osv/vnode.h \
  ../../bsd/sys/sys/queue.h ../../include/osv/power.hh \
- ../../include/api/unistd.h ControlSocket.hh
+ ../../include/api/unistd.h ControlSocket.hh \
+ ../../modules/httpserver/autogen/network.json.hh \
+ ../../modules/httpserver/json/json_elements.hh \
+ ../../modules/httpserver/json/formatter.hh \
+ ../../modules/httpserver/path_holder.hh \
+ ../../modules/httpserver/exception.hh ../../modules/httpserver/reply.hh \
+ ../../modules/httpserver/header.hh \
+ ../../modules/httpserver/json/json_elements.hh \
+ ../../modules/httpserver/handlers.hh ../../modules/httpserver/request.hh \
+ ../../modules/httpserver/common.hh ../../modules/httpserver/routes.hh \
+ ../../modules/httpserver/matchrules.hh \
+ ../../modules/httpserver/matcher.hh ../libtools/route_info.hh \
+ ../libtools/network_interface.hh ../../bsd/sys/net/if_data.h \
+ /home/vinicius/Downloads/COVEN-On-OSv/osv/build/release/gen/include/bits/alltypes.h \
+ ../../include/api/sys/types.h
 
 ClickMetrics.hh:
 
@@ -81,3 +95,41 @@ ClickMetrics.hh:
 ../../include/api/unistd.h:
 
 ControlSocket.hh:
+
+../../modules/httpserver/autogen/network.json.hh:
+
+../../modules/httpserver/json/json_elements.hh:
+
+../../modules/httpserver/json/formatter.hh:
+
+../../modules/httpserver/path_holder.hh:
+
+../../modules/httpserver/exception.hh:
+
+../../modules/httpserver/reply.hh:
+
+../../modules/httpserver/header.hh:
+
+../../modules/httpserver/json/json_elements.hh:
+
+../../modules/httpserver/handlers.hh:
+
+../../modules/httpserver/request.hh:
+
+../../modules/httpserver/common.hh:
+
+../../modules/httpserver/routes.hh:
+
+../../modules/httpserver/matchrules.hh:
+
+../../modules/httpserver/matcher.hh:
+
+../libtools/route_info.hh:
+
+../libtools/network_interface.hh:
+
+../../bsd/sys/net/if_data.h:
+
+/home/vinicius/Downloads/COVEN-On-OSv/osv/build/release/gen/include/bits/alltypes.h:
+
+../../include/api/sys/types.h:

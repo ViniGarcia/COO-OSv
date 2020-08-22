@@ -14,6 +14,11 @@
 #include <api/unistd.h>
 #include "ControlSocket.hh"
 
+#include "autogen/network.json.hh"
+#include "../libtools/route_info.hh"
+#include "../libtools/network_interface.hh"
+#include <vector>
+
 class ClickMetrics {
     private:
     int threadID;
@@ -36,9 +41,11 @@ class ClickMetrics {
     int getCPU();
     int getDisk();
     int getMemory();
-    long getNetTX();
-    long getNetRX();
-
+    long getNetTX(long txValue);
+    long getNetRX(long rxValue);
+    
+    void genericInOutBytes(long *aggregate);
+    void clickInOutBytes(long *aggregate);
 };
 
 #endif

@@ -50,7 +50,7 @@ ControlSocket::ControlSocket(char *HostIP, int Port){
         this->accessSuccess = false;
     	return;
     }
-
+    
     bzero(this->dataBuffer, 512);
     if (read(this->controlSocket, this->dataBuffer, 511) < 0){
     	this->accessSuccess = false;
@@ -66,7 +66,7 @@ void ControlSocket::ReadManagementData(std::string query){
     if (write(this->controlSocket, ("READ " + query + "\n").c_str(), query.length() + 6) < 0){
     	this->accessSuccess = false;
     	return;
-    }	
+    }
 
     bzero(this->dataBuffer, 512);
     if (read(this->controlSocket, this->dataBuffer, 511) < 0){
@@ -154,39 +154,3 @@ std::vector<std::string> ControlSocket::returnSplitData(){
     split(splitData, this->returnData, boost::algorithm::is_any_of("\b\n"), boost::algorithm::token_compress_on);
     return splitData;
 }
-
-
-/*
-int main (int argc, char *argv[]){
-	std::string query;
-
-	if (argc != 3){
-		std::cout << "\n==============================================================\nUSAGE: " << argv[0] << " CONTROLSOCKET_IP CONTROLSOCKET_PORT\n==============================================================\n\n";
-		return -1;
-	}
-
-
-	ControlSocket *socket = new ControlSocket(argv[1], atoi(argv[2]));
-	for(std::cout << "\nOPTION: ", std::getline(std::cin, query); query.compare("QUIT"); std::cout << "\nOPTION: ", std::getline(std::cin, query)){
-		if (!strcmp("READ", query.c_str())){
-			for(std::cout << "\nREAD: ", std::getline(std::cin, query); query.compare("BACK"); std::cout << "\nREAD: ", std::getline(std::cin, query)){
-				socket->ReadManagementData(query);
-				std::cout << socket->returnData;
-			}
-		}
-		if (!strcmp("WRITE", query.c_str())){
-			for(std::cout << "\nWRITE: ", std::getline(std::cin, query); query.compare("BACK"); std::cout << "\nWRITE: ", std::getline(std::cin, query)){
-				socket->WriteManagementData(query);
-				std::cout << socket->returnData;
-			}
-		}
-		if (!strcmp("FREE", query.c_str())){
-			for(std::cout << "\nFREE: ", std::getline(std::cin, query); query.compare("BACK"); std::cout << "\nFREE: ", std::getline(std::cin, query)){
-				socket->FreeData(query);
-				std::cout << socket->returnData;
-			}
-		}
-	}
-	socket->CloseSocket();
-}
-*/

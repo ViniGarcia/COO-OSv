@@ -39,12 +39,15 @@ using namespace std;
 using namespace json;
 using namespace click_plugin_json;
 
+enum tools {NONE = 0, VIRTIO, DPDK};
+
 static pid_t pid = 0;
 static shared_ptr<osv::application> app;
 static bool running = false;
 static std::string click_ver = "2.0";
 static VNFHeader *header;
 static ClickMetrics *clickMetrics;
+static int network_tool = NONE; 
 
 static hw::device_manager *devman = hw::device_manager::instance();
 static hw::driver_manager *drvman = hw::driver_manager::instance();
@@ -89,14 +92,21 @@ void stop_virtio() {
 }
 
 void start_click(std::vector<std::string> c) {
-    if (!header->headerGet(VNF_NETWORK).compare("VirtIO")) start_virtio();
+    if (!header->headerGet(VNF_NETWORK).compare("VirtIO")){ 
+	start_virtio();
+	network_tool = VIRTIO;
+    }
+    else{
+	network_tool = DPDK;
+    }
 
     bool new_program = true;
     app = osv::application::run(c[0], c, new_program);
     pid = app->get_main_thread_id();
 
     if(pid != 0){
-        clickMetrics = new ClickMetrics((int)pid, false);
+        sleep(1);
+        clickMetrics = new ClickMetrics((int)pid, true);
         running = true;
     }
 }
@@ -114,8 +124,9 @@ static std::string stop_click() {
     });
 
     if(th_finished == 1){
-	if (!header->headerGet(VNF_NETWORK).compare("VirtIO")) stop_virtio();
+	if (network_tool == VIRTIO) stop_virtio();
         running = false;
+	network_tool = NONE;
         return ("Success");
     }
 
@@ -126,7 +137,10 @@ void start_python2(std::vector<std::string> c) {
     if(python2_check()) return;
     python2_adapter();
 
-    if (!header->headerGet(VNF_NETWORK).compare("VirtIO")) start_virtio();
+    if (!header->headerGet(VNF_NETWORK).compare("VirtIO")){
+	start_virtio();
+	network_tool = VIRTIO;
+    }
 
     bool new_program = true;
     app = osv::application::run(c[0], c, new_program);
@@ -151,7 +165,8 @@ static std::string stop_python2() {
     close(nf_stop);
     app->join();
 
-    if (!header->headerGet(VNF_NETWORK).compare("VirtIO")) stop_virtio();
+    if (network_tool == VIRTIO) stop_virtio();
+    network_tool = NONE;
 
     running = false;
     return ("Success");
@@ -197,6 +212,7 @@ static json::Metrics getMetrics(){
         metrics.time_ms = duration_cast<milliseconds>
             (osv::clock::wall::now().time_since_epoch()).count();
         httpserver::json::Metric metric;
+	long RxTx[2];
 
         metric.id = 0;
         metric.name = "CPU Usage";
@@ -211,15 +227,22 @@ static json::Metrics getMetrics(){
         metric.name = "Memory Usage";
         if(running) metric.value = clickMetrics->getMemory();
         metrics.list.push(metric);
+	
+	if (running){
+	    RxTx[0] = 0; RxTx[1] = 0;
+	    if (network_tool == VIRTIO) {clickMetrics->genericInOutBytes(RxTx);}
+            else {clickMetrics->clickInOutBytes(RxTx);}
+	}
+
         metric.id = 3;
         metric.name = "Net TX";
         metric.value = 0;
-        //if(running) metric.value = clickMetrics->getNetTX();
+        if (running) metric.value = clickMetrics->getNetTX(RxTx[1]);
         metrics.list.push(metric);
         metric.id = 4;
         metric.name = "Net RX";
         metric.value = 0;
-        //if(running) metric.value = clickMetrics->getNetRX();
+        if (running) metric.value = clickMetrics->getNetRX(RxTx[0]);
         metrics.list.push(metric);
 
         return metrics;

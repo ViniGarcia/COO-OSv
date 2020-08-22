@@ -23,9 +23,14 @@ obj/click_plugin.o: click_plugin.cc click_plugin.hh \
  ../../include/osv/debug.h ../../include/osv/printf.hh \
  ../../include/osv/mount.h ../../include/osv/vnode.h \
  ../../bsd/sys/sys/queue.h ../../include/osv/power.hh \
- ../../include/api/unistd.h FrameworkAdapters.hh \
- autogen/click_plugin.json.hh ../../modules/httpserver/path_holder.hh \
- ../../modules/httpserver/routes.hh ../../include/osv/commands.hh \
+ ../../include/api/unistd.h \
+ ../../modules/httpserver/autogen/network.json.hh \
+ ../../modules/httpserver/path_holder.hh \
+ ../../modules/httpserver/routes.hh ../libtools/route_info.hh \
+ ../libtools/network_interface.hh ../../bsd/sys/net/if_data.h \
+ /home/vinicius/Downloads/COVEN-On-OSv/osv/build/release/gen/include/bits/alltypes.h \
+ ../../include/api/sys/types.h FrameworkAdapters.hh \
+ autogen/click_plugin.json.hh ../../include/osv/commands.hh \
  ../../include/osv/app.hh ../../include/osv/elf.hh ../../fs/fs.hh \
  ../../include/osv/file.h ../../include/osv/uio.h \
  ../../include/osv/dentry.h ../../include/osv/addr_range.hh \
@@ -134,13 +139,25 @@ ClickMetrics.hh:
 
 ../../include/api/unistd.h:
 
-FrameworkAdapters.hh:
-
-autogen/click_plugin.json.hh:
+../../modules/httpserver/autogen/network.json.hh:
 
 ../../modules/httpserver/path_holder.hh:
 
 ../../modules/httpserver/routes.hh:
+
+../libtools/route_info.hh:
+
+../libtools/network_interface.hh:
+
+../../bsd/sys/net/if_data.h:
+
+/home/vinicius/Downloads/COVEN-On-OSv/osv/build/release/gen/include/bits/alltypes.h:
+
+../../include/api/sys/types.h:
+
+FrameworkAdapters.hh:
+
+autogen/click_plugin.json.hh:
 
 ../../include/osv/commands.hh:
 
